@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .poster {
+    width: 480px;
+    background: #111;
+    border: 2px solid #c8a84b;
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(200,168,75,0.15), inset 0 0 80px rgba(0,0,0,0.8);
+  }
+
+  .poster::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9;
+    opacity: 0.4;
+  }
+
+  .header-band {
+    background: #c8a84b;
+    padding: 6px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-band span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #111;
+    letter-spacing: 3px;
+  }
+
+  .top-section {
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid rgba(200,168,75,0.3);
+  }
+
+  .district-badge {
+    display: inline-block;
+    border: 1px solid rgba(200,168,75,0.5);
+    padding: 3px 10px;
+    font-size: 10px;
+    color: rgba(200,168,75,0.7);
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+  }
+
+  .wanted-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: #c8a84b;
+    letter-spacing: 8px;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(200,168,75,0.4);
+  }
+
+  .wanted-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: rgba(200,168,75,0.5);
+    letter-spacing: 12px;
+    margin-top: 2px;
+  }
+
+  .photo-section {
+    display: flex;
+    gap: 0;
+  }
+
+  .photo-frame {
+    flex: 1;
+    position: relative;
+    background: #1a1a1a;
+    border-right: 1px solid rgba(200,168,75,0.2);
+  }
+
+  .photo-placeholder {
+    width: 100%;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .photo-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    filter: sepia(20%) contrast(1.1) brightness(0.9);
+  }
+
+  .photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+  }
+
+  .corner-tl, .corner-tr, .corner-bl, .corner-br {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: rgba(200,168,75,0.6);
+    border-style: solid;
+    z-index: 2;
+  }
+  .corner-tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+  .corner-tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
+  .corner-bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
+  .corner-br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+  .photo-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(200,168,75,0.1);
+    border-top: 1px solid rgba(200,168,75,0.3);
+    padding: 4px;
+    text-align: center;
+    font-size: 9px;
+    color: rgba(200,168,75,0.5);
+    letter-spacing: 3px;
+    z-index: 2;
+  }
+
+  .info-panel {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .info-label {
+    font-size: 8px;
+    color: rgba(200,168,75,0.4);
+    letter-spacing: 3px;
+    margin-bottom: 2px;
+  }
+
+  .info-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #ddd;
+    letter-spacing: 1px;
+  }
+
+  .info-value.highlight {
+    color: #c8a84b;
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(200,168,75,0.15);
+  }
+
+  .alias-box {
+    border: 1px solid rgba(200,168,75,0.25);
+    padding: 6px 10px;
+    background: rgba(200,168,75,0.04);
+  }
+
+  .bounty-section {
+    margin: 0;
+    padding: 16px 24px;
+    border-top: 1px solid rgba(200,168,75,0.3);
+    border-bottom: 1px solid rgba(200,168,75,0.3);
+    background: rgba(200,168,75,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .bounty-label {
+    font-size: 9px;
+    color: rgba(200,168,75,0.5);
+    letter-spacing: 4px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .bounty-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: #c8a84b;
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(200,168,75,0.5);
+  }
+
+  .bounty-currency {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: rgba(200,168,75,0.6);
+    letter-spacing: 4px;
+    margin-left: 6px;
+  }
+
+  .warning-tag {
+    background: #8b0000;
+    border: 1px solid #c0392b;
+    padding: 6px 12px;
+    font-size: 9px;
+    color: #ff6b6b;
+    letter-spacing: 2px;
+    text-align: center;
+  }
+
+  .crimes-section {
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(200,168,75,0.2);
+  }
+
+  .crimes-title {
+    font-size: 9px;
+    color: rgba(200,168,75,0.4);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+
+  .crime-item {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    color: #bbb;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .crime-item::before {
+    content: '//';
+    color: rgba(200,168,75,0.4);
+    font-size: 10px;
+  }
+
+  .physical-section {
+    padding: 12px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    border-bottom: 1px solid rgba(200,168,75,0.2);
+  }
+
+  .phys-label {
+    font-size: 8px;
+    color: rgba(200,168,75,0.35);
+    letter-spacing: 2px;
+    display: block;
+  }
+  .phys-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #ccc;
+  }
+
+  .warning-section {
+    padding: 10px 24px;
+    border-bottom: 1px solid rgba(200,168,75,0.2);
+    background: rgba(139,0,0,0.08);
+  }
+
+  .warning-text {
+    font-size: 9px;
+    color: rgba(255,107,107,0.7);
+    letter-spacing: 1px;
+    line-height: 1.6;
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  .footer-band {
+    background: rgba(200,168,75,0.07);
+    padding: 10px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-code {
+    font-size: 9px;
+    color: rgba(200,168,75,0.3);
+    letter-spacing: 2px;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    background: #c0392b;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    box-shadow: 0 0 8px rgba(192,57,43,0.8);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .stamp {
+    position: absolute;
+    top: 180px;
+    right: 20px;
+    border: 3px solid rgba(192,57,43,0.7);
+    color: rgba(192,57,43,0.7);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    padding: 4px 8px;
+    transform: rotate(-12deg);
+    pointer-events: none;
+    z-index: 20;
+    text-shadow: 0 0 10px rgba(192,57,43,0.4);
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="noise"></div>
+
+  <div class="header-band">
+    <span>AVIS OFFICIEL // DISTRICT 09</span>
+    <span>REF. FXR-0974-V</span>
+  </div>
+
+  <div class="top-section">
+    <div class="district-badge">ASSOCIATION HANA // RUELLES</div>
+    <div class="wanted-title">WANTED</div>
+    <div class="wanted-sub">MORT OU VIF</div>
+  </div>
+
+  <div class="photo-section">
+    <div class="photo-frame">
+      <div class="photo-placeholder">
+        <img src="https://i.postimg.cc/d1BCp7bH/image.png" alt="Victor" />
+        <div class="photo-overlay"></div>
+        <div class="corner-tl"></div>
+        <div class="corner-tr"></div>
+        <div class="corner-bl"></div>
+        <div class="corner-br"></div>
+      </div>
+      <div class="photo-label">SUJET IDENTIFIÉ</div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-block">
+        <div class="info-label">IDENTITÉ</div>
+        <div class="info-value highlight">VICTOR</div>
+        <div class="info-value" style="font-size:11px; color: rgba(200,168,75,0.4);">NOM DE FAMILLE INCONNU</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="alias-box">
+        <div class="info-label">ALIAS CONNUS</div>
+        <div class="info-value" style="font-size:13px;">"VIC"</div>
+        <div class="info-value" style="font-size:13px;">"LE TACITURNE"</div>
+      </div>
+
+      <div class="info-block">
+        <div class="info-label">ÂGE ESTIMÉ</div>
+        <div class="info-value">24-26 ANS</div>
+      </div>
+
+      <div class="info-block">
+        <div class="info-label">ORIGINE</div>
+        <div class="info-value">BAS-FONDS DU NEUF</div>
+      </div>
+
+      <div class="info-block">
+        <div class="info-label">STATUT</div>
+        <div class="info-value" style="color: #c0392b;"><span class="status-dot"></span>EN FUITE</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bounty-section">
+    <div>
+      <span class="bounty-label">PRIME OFFERTE</span>
+      <span>
+        <span class="bounty-amount">85.000</span>
+        <span class="bounty-currency">AHN</span>
+      </span>
+    </div>
+    <div class="warning-tag">SUJET EXTRÊMEMENT<br>DANGEREUX</div>
+  </div>
+
+  <div class="crimes-section">
+    <div class="crimes-title">CHARGES RETENUES</div>
+    <div class="crime-item">Rupture de contrat envers faction non divulguée</div>
+    <div class="crime-item">Multiples homicides en zone de Ruelles</div>
+    <div class="crime-item">Opérations non autorisées, Districts 9 / 11 / 14</div>
+    <div class="crime-item">Insoumission aux injonctions d'un Syndicat</div>
+  </div>
+
+  <div class="physical-section">
+    <div class="phys-item">
+      <span class="phys-label">TAILLE</span>
+      <span class="phys-value">1,88m à 1,92m</span>
+    </div>
+    <div class="phys-item">
+      <span class="phys-label">CHEVEUX</span>
+      <span class="phys-value">VIOLETS</span>
+    </div>
+    <div class="phys-item">
+      <span class="phys-label">YEUX</span>
+      <span class="phys-value">JAUNES</span>
+    </div>
+    <div class="phys-item">
+      <span class="phys-label">CICATRICE</span>
+      <span class="phys-value">MÂCHOIRE G.</span>
+    </div>
+    <div class="phys-item">
+      <span class="phys-label">ARMEMENT</span>
+      <span class="phys-value">LAME / ARME À FEU</span>
+    </div>
+    <div class="phys-item">
+      <span class="phys-label">E.G.O</span>
+      <span class="phys-value" style="color:#c0392b;">VOLATIL</span>
+    </div>
+  </div>
+
+  <div class="warning-section">
+    <div class="warning-text">
+      AVERTISSEMENT : Le sujet est un ancien opérateur militaire formé au combat rapproché et à l'infiltration. Port quasi-systématique d'un masque respiratoire. Toujours armé. Ne pas approcher seul. Contacter immédiatement l'émetteur de la prime en cas d'identification.
+    </div>
+  </div>
+
+  <div class="footer-band">
+    <span class="footer-code">D09-FXR // ÉMIS : AN 980</span>
+    <span class="footer-code">SIGNALEMENT : BUREAU LOCAL</span>
+  </div>
+
+  <div class="stamp">ACTIF</div>
+</div>
+</body>
+</html>

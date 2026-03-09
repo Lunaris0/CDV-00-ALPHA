@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOSSIER — GROUPE ZÉRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060608;
+    --bg2: #0c0c10;
+    --bg3: #111118;
+    --red: #c0392b;
+    --red2: #e74c3c;
+    --amber: #e67e22;
+    --dim: #1a1a24;
+    --border: #2a2a3a;
+    --text: #c8c8d8;
+    --text-dim: #5a5a70;
+    --text-bright: #e8e8f0;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Bebas Neue', cursive;
+    --body: 'Rajdhani', sans-serif;
+    --green: #27ae60;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Scanlines overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Noise texture */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.3;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(192,57,43,0.06) 0%, transparent 100%);
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0;
+    gap: 24px;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .header-stamp {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .header-title {
+    font-family: var(--display);
+    font-size: clamp(36px, 5vw, 64px);
+    letter-spacing: 8px;
+    color: var(--text-bright);
+    line-height: 1;
+  }
+
+  .header-title span {
+    color: var(--red);
+  }
+
+  .header-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .header-right {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .header-right .status {
+    color: var(--red);
+    font-size: 10px;
+    letter-spacing: 3px;
+    animation: blink 2s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .header-deco {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--red) 20%, var(--red) 80%, transparent 100%);
+    opacity: 0.4;
+  }
+
+  /* ─── CLASSIFICATION BAR ─── */
+  .classif-bar {
+    background: var(--red);
+    padding: 6px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .classif-bar span {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #fff;
+  }
+
+  /* ─── MAIN ─── */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 24px;
+    background: var(--red);
+  }
+
+  .section-label h2 {
+    font-family: var(--display);
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: var(--text-bright);
+  }
+
+  .section-label .line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  .section-label .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ─── FEATURED CARD (Victor) ─── */
+  .featured-wrapper {
+    margin-bottom: 64px;
+  }
+
+  .featured-card {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .featured-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--red), transparent);
+  }
+
+  .featured-card::after {
+    content: 'DOSSIER PRINCIPAL';
+    position: absolute;
+    top: 16px; right: -28px;
+    background: var(--red);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 4px 40px;
+    transform: rotate(45deg);
+  }
+
+  .featured-img {
+    position: relative;
+    background: var(--dim);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    min-height: 500px;
+  }
+
+  .featured-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    filter: grayscale(20%) contrast(1.1);
+    display: block;
+  }
+
+  .img-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(0deg, var(--bg2) 0%, transparent 60%);
+    height: 200px;
+    pointer-events: none;
+  }
+
+  .img-id {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .img-id span {
+    display: block;
+    font-size: 20px;
+    color: var(--red);
+    letter-spacing: 0;
+    font-family: var(--display);
+  }
+
+  /* corner brackets */
+  .featured-img::before,
+  .featured-img::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    z-index: 2;
+  }
+  .featured-img::before {
+    top: 12px; left: 12px;
+    border-top: 2px solid var(--red);
+    border-left: 2px solid var(--red);
+  }
+  .featured-img::after {
+    bottom: 12px; right: 12px;
+    border-bottom: 2px solid var(--red);
+    border-right: 2px solid var(--red);
+  }
+
+  .featured-info {
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .fi-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+
+  .fi-alias {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+  }
+
+  .fi-name {
+    font-family: var(--display);
+    font-size: 52px;
+    letter-spacing: 6px;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .fi-role {
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .fi-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .stat {
+    background: var(--bg3);
+    padding: 12px 16px;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: var(--body);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .stat-value.red { color: var(--red); }
+  .stat-value.amber { color: var(--amber); }
+
+  .fi-section {
+    margin-bottom: 20px;
+  }
+
+  .fi-section-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .fi-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .fi-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .fi-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--dim);
+  }
+
+  .tag.red {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(192,57,43,0.1);
+  }
+
+  .tag.amber {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(230,126,34,0.1);
+  }
+
+  .objective-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .obj {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    background: var(--dim);
+    position: relative;
+  }
+
+  .obj::before {
+    content: attr(data-num);
+    position: absolute;
+    top: 8px; right: 10px;
+    font-family: var(--mono);
+    font-size: 28px;
+    color: rgba(255,255,255,0.03);
+    font-weight: bold;
+  }
+
+  .obj-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .obj-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  /* ─── GROUPE GRID ─── */
+  .group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 64px;
+  }
+
+  .member-card {
+    background: var(--bg2);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .member-card:hover {
+    background: var(--bg3);
+  }
+
+  .member-card:hover .mc-img img {
+    filter: grayscale(0%) contrast(1.15);
+  }
+
+  .mc-img {
+    position: relative;
+    height: 320px;
+    background: var(--dim);
+    overflow: hidden;
+  }
+
+  .mc-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    filter: grayscale(40%) contrast(1.05);
+    transition: filter 0.3s;
+    display: block;
+  }
+
+  .mc-img-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(0deg, var(--bg2) 0%, transparent 100%);
+  }
+
+  .mc-status {
+    position: absolute;
+    top: 12px; right: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+  }
+
+  .mc-status.active {
+    background: rgba(39,174,96,0.2);
+    border: 1px solid var(--green);
+    color: var(--green);
+  }
+
+  .mc-status.unknown {
+    background: rgba(90,90,112,0.3);
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+  }
+
+  .mc-status.alert {
+    background: rgba(192,57,43,0.2);
+    border: 1px solid var(--red);
+    color: var(--red);
+    animation: blink 1.5s step-end infinite;
+  }
+
+  .mc-num {
+    position: absolute;
+    top: 12px; left: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .mc-info {
+    padding: 16px 20px 20px;
+  }
+
+  .mc-alias {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--red);
+    letter-spacing: 3px;
+    margin-bottom: 2px;
+  }
+
+  .mc-name {
+    font-family: var(--display);
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .mc-role {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .mc-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 12px;
+  }
+
+  .mc-data {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .mc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .mc-row-label { color: var(--text-dim); }
+  .mc-row-val { color: var(--text); }
+  .mc-profile { margin-bottom: 12px; }
+  .mc-profile-label { font-family: var(--mono); font-size: 9px; color: var(--red); letter-spacing: 2px; margin-bottom: 6px; }
+  .mc-profile-text { font-size: 12px; line-height: 1.6; color: var(--text); }
+
+  .mc-row-val.redacted {
+    color: transparent;
+    background: var(--text-dim);
+    border-radius: 2px;
+    font-size: 8px;
+    padding: 1px 0;
+  }
+
+  /* ─── WORLD INFO FOOTER ─── */
+  .world-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  .wf-block h3 {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+
+  .wf-block p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+
+  /* ─── BOTTOM BAR ─── */
+  .bottom-bar {
+    margin-top: 60px;
+    border-top: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  /* ─── GLITCH EFFECT ─── */
+  @keyframes glitch {
+    0%, 90%, 100% { clip-path: none; transform: none; }
+    91% { clip-path: rect(28px, 9999px, 36px, 0); transform: translateX(-4px); }
+    93% { clip-path: rect(60px, 9999px, 70px, 0); transform: translateX(4px); }
+    95% { clip-path: rect(10px, 9999px, 20px, 0); transform: translateX(-2px); }
+  }
+
+  .glitch {
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    color: var(--red);
+    animation: glitch 4s infinite;
+    opacity: 0.5;
+  }
+
+  /* ─── REDACTED BLOCK ─── */
+  .redacted {
+    display: inline-block;
+    background: var(--text-dim);
+    color: transparent;
+    border-radius: 2px;
+    user-select: none;
+  }
+
+  /* ─── PLACEHOLDER IMAGE ─── */
+  .img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--dim);
+    gap: 8px;
+  }
+
+  .img-placeholder svg {
+    opacity: 0.15;
+  }
+
+  .img-placeholder span {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  @media (max-width: 900px) {
+    .featured-card { grid-template-columns: 1fr; }
+    .featured-img { min-height: 400px; }
+    .world-footer { grid-template-columns: 1fr; }
+    .objective-block { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .main { padding: 32px 16px; }
+    .header { padding: 0 16px; }
+    .fi-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- CLASSIFICATION BAR -->
+<div class="classif-bar">
+  <span>⬛ DOCUMENT CLASSIFIÉ — USAGE INTERNE RESTREINT</span>
+  <span>SYNDICAT INDÉPENDANT — DISTRICT 9</span>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-stamp">DOSSIER OPÉRATIONNEL // REF. GRP-09-ZRO</div>
+      <div class="header-title glitch" data-text="GROUPE ZÉRO">GROUPE <span>ZÉRO</span></div>
+      <div class="header-sub">Unité indépendante — Fixers — District 9 / Mobilité multi-districts</div>
+    </div>
+    <div class="header-right">
+      <div class="status">● ACTIF</div>
+      <div>CHEF D'UNITÉ : VICTOR</div>
+      <div>MEMBRES CONFIRMÉS : 09</div>
+      <div>CONTRATS ACTIFS : ██</div>
+      <div>NIVEAU DE MENACE : EXTRÊMEMENT DANGEREUX</div>
+    </div>
+  </div>
+  <div class="header-deco"></div>
+</header>
+
+<main class="main">
+
+  <!-- ═══════════════════════════════════════
+       CHEF D'UNITÉ — VICTOR
+  ═══════════════════════════════════════ -->
+  <div class="section-label">
+    <h2>CHEF D'UNITÉ</h2>
+    <div class="line"></div>
+    <div class="count">DOSSIER PRINCIPAL</div>
+  </div>
+
+  <div class="featured-wrapper">
+    <div class="featured-card">
+
+      <!-- IMAGE -->
+      <div class="featured-img">
+        <img src="https://i.postimg.cc/d1BCp7bH/image.png" alt="Victor" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
+        <div class="img-placeholder" style="display:none">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+            <rect x="1" y="1" width="58" height="58" stroke="#5a5a70" stroke-width="1" stroke-dasharray="4 4"/>
+            <circle cx="30" cy="22" r="10" stroke="#5a5a70" stroke-width="1"/>
+            <path d="M10 55 C10 40 50 40 50 55" stroke="#5a5a70" stroke-width="1"/>
+          </svg>
+          <span>PHOTO NON DISPONIBLE</span>
+        </div>
+        <div class="img-overlay"></div>
+        <div class="img-id">
+          IDENTIFIANT<span>VIC-001 | ZÉRO</span>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div class="featured-info">
+        <div class="fi-header">
+          <div class="fi-alias">// ALIAS : "VIC" — "LE TACITURNE" — "ZÉRO"</div>
+          <div class="fi-name">VICTOR</div>
+          <div class="fi-role">Fixer Indépendant · Exécuteur de Contrats · Chef d'Unité</div>
+        </div>
+
+        <!-- STATS -->
+        <div class="fi-stats">
+          <div class="stat">
+            <div class="stat-label">ÂGE APPARENT</div>
+            <div class="stat-value">24 – 26 ans</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">TAILLE</div>
+            <div class="stat-value">1,92 m</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">DISTRICT D'ORIGINE</div>
+            <div class="stat-value">District 9</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">STATUT LÉGAL</div>
+            <div class="stat-value red">RECHERCHÉ</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">NIVEAU MENACE</div>
+            <div class="stat-value amber">SUJET EXTRÊMEMENT
+DANGEREUX</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">YEUX / SIGNES PART.</div>
+            <div class="stat-value">Jaunes / Cicatrice mâch.</div>
+          </div>
+        </div>
+
+        <!-- PROFIL -->
+        <div class="fi-section">
+          <div class="fi-section-title">PROFIL PSYCHOLOGIQUE</div>
+          <p class="fi-text">Sujet peu loquace, observateur compulsif. Parle peu, agit vite. Loyauté conditionnelle mais absolue une fois accordée. Capable de violence contrôlée ; montre une réaction émotionnelle atypique face aux victimes collatérales. Dort peu. Antécédents de désobéissance aux ordres jugés "inutilement cruels".</p>
+        </div>
+
+        <!-- COMPÉTENCES -->
+        <div class="fi-section">
+          <div class="fi-section-title">COMPÉTENCES CONFIRMÉES</div>
+          <div class="fi-tags">
+            <span class="tag red">Infiltration</span>
+            <span class="tag red">Neutralisation</span>
+            <span class="tag red">Extraction</span>
+            <span class="tag">Escorte</span>
+            <span class="tag">Renseignement de terrain</span>
+            <span class="tag">Combat rapproché</span>
+            <span class="tag">Gestion de réseau</span>
+            <span class="tag amber">E.G.O — STATUT INCONNU</span>
+          </div>
+        </div>
+
+        <!-- OBJECTIFS -->
+        <div class="fi-section">
+          <div class="fi-section-title">OBJECTIFS IDENTIFIÉS</div>
+          <div class="objective-block">
+            <div class="obj" data-num="01">
+              <div class="obj-label">PRIORITÉ ABSOLUE</div>
+              <div class="obj-text">Localiser MIRA — sœur cadette — disparue. Identifier l'entité responsable. <strong style="color:var(--red)">Régler l'addition.</strong></div>
+            </div>
+            <div class="obj" data-num="02">
+              <div class="obj-label">OBJECTIF SECONDAIRE</div>
+              <div class="obj-text">Maintenir le groupe en vie. Construire un réseau de contacts et accumuler les ressources nécessaires à ses fins.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HISTORIQUE -->
+        <div class="fi-section">
+          <div class="fi-section-title">NOTES DE TERRAIN</div>
+          <p class="fi-text">Formé par une organisation <span class="redacted">████████████</span>. Rupture ou éviction suite à un incident <span class="redacted">█████████████████████████</span>. Retour dans les Ruelles du District 9. Disparition de sa sœur Mira constatée pendant son absence. Depuis : activité Fixer, accumulation de contrats, constitution du présent groupe.</p>
+        </div>
+
+      </div><!-- /featured-info -->
+    </div><!-- /featured-card -->
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       MEMBRES DU GROUPE
+  ═══════════════════════════════════════ -->
+  <div class="section-label">
+    <h2>MEMBRES DE L'UNITÉ</h2>
+    <div class="line"></div>
+    <div class="count">06 OPÉRATEURS</div>
+  </div>
+
+  <div class="group-grid">
+
+    <!-- #01 LACUNE -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/rw4ksrNF/image.png" alt="LACUNE">
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#01</div>
+        <div class="mc-status active">ACTIF</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">LACUNE</div>
+        <div class="mc-role">Infiltration &amp; Neutralisation</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Fixer de longue date. Spécialisée dans les opérations sans trace : sujets, documents, preuves. Opère entre plusieurs Districts. Aucun dossier d'Aile connu. Aucune assurance-vie enregistrée.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val redacted">████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">AUGMENTATIONS</span><span class="mc-row-val redacted">█████████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--green)">OPÉRATIONNEL</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- #02 ORACLE -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/5ykVY5RZ/image.png" alt="ORACLE">
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#02</div>
+        <div class="mc-status active">ACTIF</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">ORACLE</div>
+        <div class="mc-role">Renseignement &amp; Guerre Électronique</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Spécialiste des réseaux et des flux d'information de la Cité. Accès présumé à des terminaux normalement réservés aux Ailes. Augmentations cognitives hautement probables. Terrain : exceptionnel.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val redacted">████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">AUGMENTATIONS</span><span class="mc-row-val" style="color:var(--amber)">COGNITIVES — PROB. ÉLEVÉE</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--green)">OPÉRATIONNEL</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- #03 FERRAILLE -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/pdDRGFmQ/image.png" alt="FERRAILLE">
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#03</div>
+        <div class="mc-status active">ACTIF</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">FERRAILLE</div>
+        <div class="mc-role">Appui Feu &amp; Extraction</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Fixer augmenté. Niveau de modification corporelle élevé. Spécialiste de la sécurisation périmétrique et de l'extraction sous contact dans les Ruelles. Peu de contrats solo. Toujours opérationnel.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val redacted">████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">AUGMENTATIONS</span><span class="mc-row-val" style="color:var(--red)">NIVEAU ÉLEVÉ</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--green)">OPÉRATIONNEL</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- #04 PLIURE -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/g28CmPG2/image.png" alt="PLIURE">
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#04</div>
+        <div class="mc-status active">ACTIF</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">PLIURE</div>
+        <div class="mc-role">Logistique &amp; Identités</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Gestion des ressources, planques, documents de transit entre Districts. Profil compatible avec une ancienne activité de Syndicat. Maintient la cellule hors des registres officiels des Ailes.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val redacted">████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">PASSÉ SYNDICAT</span><span class="mc-row-val" style="color:var(--amber)">PROBABLE</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--green)">OPÉRATIONNEL</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- #05 SILLON -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/xCx7tf3b/image.png" alt="SILLON">
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#05</div>
+        <div class="mc-status active">ACTIF</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">SILLON</div>
+        <div class="mc-role">Manipulation &amp; Réseaux Humains</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Aucun dossier. Aucune augmentation visible. Circule dans les Nids comme dans les Ruelles. Construit des accès là où les autres membres ne peuvent pas entrer. Vecteur principal de renseignement humain.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val" style="color:var(--green)">AUCUN</span></div>
+          <div class="mc-row"><span class="mc-row-label">AUGMENTATIONS</span><span class="mc-row-val">AUCUNE VISIBLE</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--green)">OPÉRATIONNEL</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- #06 RÉSIDU -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/zXRMF1bG/image.png" alt="RÉSIDU">
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#06</div>
+        <div class="mc-status unknown">PROFIL EN COURS</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">RÉSIDU</div>
+        <div class="mc-role">Nettoyage &amp; Gestion Post-Op</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Le plus jeune de la cellule. Intervient en dernier sur chaque site. Efface les traces, neutralise les imprévus. Profil en cours de constitution. Aucun avis émis à ce jour.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val" style="color:var(--green)">AUCUN</span></div>
+          <div class="mc-row"><span class="mc-row-label">AUGMENTATIONS</span><span class="mc-row-val redacted">█████████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--text-dim)">PROFIL PARTIEL</span></div>
+        </div>
+      </div>
+    </div>
+ <!-- #07 CENDRE -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/9Xq0Zrp9/image.png" alt="CENDRE">
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#07</div>
+        <div class="mc-status active">ACTIF</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">CENDRE</div>
+        <div class="mc-role">Soutien Médical &amp; Augmentations</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Ancien technicien médical d'une Aile non identifiée, radié pour soins non autorisés en zone Ruelles. Maintenance des augmentations du groupe, stabilisation post-combat, extraction de données sur implants ennemis. Ne prend pas d'arme. Toujours derrière. Toujours là quand les autres tombent.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val redacted">████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">PASSÉ AILE</span><span class="mc-row-val" style="color:var(--amber)">CONFIRMÉ — AILE INCONNUE</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--green)">OPÉRATIONNEL</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- #08 SIGNAL -->
+    <div class="member-card">
+      <div class="mc-img">
+        <img src="https://i.postimg.cc/tJmNK71G/image.png" alt="SIGNAL">
+        <div class="img-placeholder">
+          <svg width="40" height="40" viewBox="0 0 60 60" fill="none">
+            <rect x="1" y="1" width="58" height="58" stroke="#5a5a70" stroke-width="1" stroke-dasharray="4 4"/>
+            <circle cx="30" cy="22" r="10" stroke="#5a5a70" stroke-width="1"/>
+            <path d="M10 55 C10 40 50 40 50 55" stroke="#5a5a70" stroke-width="1"/>
+          </svg>
+          <span>AUCUN VISUEL DISPONIBLE</span>
+        </div>
+        <div class="mc-img-overlay"></div>
+        <div class="mc-num">#08</div>
+        <div class="mc-status unknown">NON LOCALISÉ</div>
+      </div>
+      <div class="mc-info">
+        <div class="mc-alias">// INDICATIF</div>
+        <div class="mc-name">SIGNAL</div>
+        <div class="mc-role">Observation &amp; Tir Longue Distance</div>
+        <div class="mc-divider"></div>
+        <div class="mc-profile">
+          <div class="mc-profile-label">PROFIL OPÉRATIONNEL</div>
+          <div class="mc-profile-text">Origine inconnue. Aucun dossier, aucune trace dans les registres des Syndicats ni des Ailes. Toujours en position avant le reste du groupe. Communique par signal convenu uniquement. Personne dans la cellule ne l'a vu sans équipement. Fiabilité : absolue. Loyauté : non évaluée.</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-data">
+          <div class="mc-row"><span class="mc-row-label">AVIS ACTIF</span><span class="mc-row-val" style="color:var(--green)">AUCUN RECENSÉ</span></div>
+          <div class="mc-row"><span class="mc-row-label">AUGMENTATIONS</span><span class="mc-row-val redacted">█████████████</span></div>
+          <div class="mc-row"><span class="mc-row-label">STATUT</span><span class="mc-row-val" style="color:var(--text-dim)">POSITION INCONNUE</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /group-grid -->
+
+
+  <!-- ═══════════════════════════════════════
+       CONTEXTE MONDE
+  ═══════════════════════════════════════ -->
+  <div class="section-label">
+    <h2>CONTEXTE OPÉRATIONNEL</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="world-footer">
+    <div class="wf-block">
+      <h3>ZONE D'OPÉRATION</h3>
+      <p>District 9 — Bas-Fonds du Neuf (QG principal). Mobilité confirmée sur plusieurs districts. Le groupe opère principalement dans les Ruelles, en dehors de la juridiction directe des Ailes.</p>
+    </div>
+    <div class="wf-block">
+      <h3>STRUCTURE LÉGALE</h3>
+      <p>Groupe Fixer indépendant non rattaché à un Syndicat. Activement recherché par au moins une faction non identifiée. Accepte contrats multi-districts. Monnaie : Ahn.</p>
+    </div>
+    <div class="wf-block">
+      <h3>NIVEAU DE MENACE</h3>
+      <p>Classement actuel : <strong style="color:var(--amber)">EXTRÊMEMENT DANGEREUX
+</strong>. Attribution par l'Association Hana. Réévaluation possible selon l'évolution des activités du groupe et de ses contrats.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <span>GROUPE ZÉRO — DOSSIER GRP-09-ZRO — USAGE RESTREINT</span>
+  <span>CITÉ // DISTRICT 9 // RUELLES</span>
+</div>
+
+<script>
+  // Animate elements on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.member-card, .featured-card');
+    cards.forEach((card, i) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      card.style.transition = `opacity 0.4s ease ${i * 0.08}s, transform 0.4s ease ${i * 0.08}s`;
+      setTimeout(() => {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 100);
+    });
+  });
+</script>
+
+</body>
+</html>
